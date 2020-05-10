@@ -2,6 +2,7 @@
 #include <ota.h>
 #include <wifi.h>
 #include <web.h>
+#include <dhta.h>
 
 #define LED_BUILTIN 2
 
@@ -11,6 +12,7 @@ void setup()
 	WiFiE::init();
 	OTA::init();
 	WEB::init();
+	DHTA::init();
 	pinMode(LED_BUILTIN, OUTPUT);
 }
 
@@ -26,5 +28,6 @@ void loop()
 	WiFiE::handle();
 	OTA::handle();
 	WEB::handle();
+	DHTA::handle();
 	blink();
 }

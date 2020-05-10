@@ -1,6 +1,7 @@
 #include "web.h"
 #include <wifi.h>
 #include "webfs.h"
+#include <dhta.h>
 
 
 ESP8266WebServer WEB::server(80);
@@ -22,14 +23,24 @@ void WEB::init()
 
 
 	//SERVER INIT
+	server.on("/data", HTTP_GET, []() {
+		String json = "{";
+		json += "\"temperature\":" + String(DHTA::getTemperature());
+		json += ", \"humidity\":" + String(DHTA::getHumidity());
+		json += "}";
+		server.send(200, "text/json", json);
+		json = String();
+	});
+	server.on("/humidity", HTTP_GET, []() { server.send(200, "text/plain", String(DHTA::getHumidity())); });
+	server.on("/temperature", HTTP_GET, []() { server.send(200, "text/plain", String(DHTA::getTemperature())); });
 	//list directory
 	server.on("/list", HTTP_GET, handleFileListOld);
 	server.on("/listnew", HTTP_GET, handleFileList);
 	//load editor
 	server.on("/edit", HTTP_GET, []() {
-	if (!handleFileRead("/edit.htm")) {
-		server.send(404, "text/plain", "FileNotFound");
-	}
+		if (!handleFileRead("/edit.htm")) {
+			server.send(404, "text/plain", "FileNotFound");
+		}
 	});
 	//create file
 	server.on("/edit", HTTP_PUT, handleFileCreate);
